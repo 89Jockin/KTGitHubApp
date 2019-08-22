@@ -8,6 +8,7 @@ import android.support.annotation.StringRes
 import android.support.v7.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
@@ -16,6 +17,8 @@ import android.widget.ProgressBar
 import android.widget.Toast
 
 import com.xemp.github.R
+import com.xemp.github.data.Settings
+import com.xemp.mvp.impl.MainFragment
 
 class LoginActivity : AppCompatActivity() {
 
@@ -25,6 +28,10 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_login)
+        val mainFragment = MainFragment()
+        Log.d("mvp" , mainFragment.toString())
+        Log.d("mvp" , mainFragment.presenter.toString())
+        Log.d("mvp" , mainFragment.presenter.view.toString())
 
         val username = findViewById<EditText>(R.id.username)
         val password = findViewById<EditText>(R.id.password)
@@ -33,6 +40,9 @@ class LoginActivity : AppCompatActivity() {
 
         loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
             .get(LoginViewModel::class.java)
+
+        username.setText(Settings.username)
+        password.setText(Settings.password)
 
         loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
@@ -93,6 +103,8 @@ class LoginActivity : AppCompatActivity() {
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
                 loginViewModel.login(username.text.toString(), password.text.toString())
+                Settings.password = password.text.toString()
+                Settings.username = username.text.toString()
             }
         }
     }
